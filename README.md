@@ -24,11 +24,11 @@ cmake --build build --config Release
 
 ## Run
 
-cfxmime works with Conflux-Rust together. In order to run cfxmine, here are the steps:
+cfxmine works with [Conflux-Rust](https://github.com/Conflux-Chain/conflux-rust) together. In order to run cfxmine, here are the steps:
 
-1. Start Conflux-Rust with stratum enables. In the configuration file, set
-``use_stratum=true``. By default, it will open 32525 port at the public address
+1. Start Conflux-Rust with stratum enabled. In the configuration file, set
+``mining_type = "stratum"``. By default, it will open 32525 port at the public address
 of the client. You can also change the port in the configuration file.
 
-2. Run ``./build/bin/cfxmine --addr A.B.C.D --port 32525``, where ``A.B.C.D`` is the
+2. Run ``./build/bin/cfxmine --addr A.B.C.D --port 32525 --gpu``, where ``A.B.C.D`` is the
 public ip address of the client.
