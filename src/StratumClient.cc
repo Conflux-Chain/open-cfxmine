@@ -68,6 +68,16 @@ void ProcessResponseMessage(UNUSED tcp::socket &client_socket,
   }
 }
 
+std::string BuildJsonString(const Json::Value &value) {
+  Json::StreamWriterBuilder builder;
+  builder["commentStyle"] = "None";
+  builder["indentation"] = "";
+  std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
+  std::ostringstream sout;
+  writer->write(value, &sout);
+  return sout.str() + "\n";
+}
+
 } // namespace
 
 void StratumClient::HandleDisconnect() {
@@ -148,15 +158,6 @@ void StratumClient::SubmitJobAsync(const std::vector<std::string> solutions) {
     params.append(solutions[i]);
   }
   submitJson["params"] = params;
-
-  Json::StreamWriterBuilder builder;
-  builder["commentStyle"] = "None";
-  builder["indentation"] = "";
-  std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
-  std::ostringstream sout;
-  writer->write(submitJson, &sout);
-  std::string message = sout.str() + "\n";
-
   std::cout << "Found a solution: {";
   for (size_t i = 0; i < solutions.size(); i++) {
     if (i != 0)
@@ -166,10 +167,10 @@ void StratumClient::SubmitJobAsync(const std::vector<std::string> solutions) {
   std::cout << "}\n";
   total_accepted_count++;
   // std::cout << "Submit: " << message;
-  boost::asio::async_write(*this->client_socket, boost::asio::buffer(message),
-                           std::bind(&StratumClient::DummyWriteHandler, this,
-                                     std::placeholders::_1,
-                                     std::placeholders::_2));
+  boost::asio::async_write(
+      *this->client_socket, boost::asio::buffer(BuildJsonString(submitJson)),
+      std::bind(&StratumClient::DummyWriteHandler, this, std::placeholders::_1,
+                std::placeholders::_2));
 }
 
 void StratumClient::UpdateHashRateAsync(size_t nonce_count) {
@@ -211,11 +212,16 @@ bool StratumClient::StartSubscribe(const std::string &address, const int port) {
       this->client_socket = std::make_unique<tcp::socket>(*this->ioService);
       this->client_socket->connect(
           tcp::endpoint(address::from_string(address), port));
-      boost::asio::write(
-          *this->client_socket,
-          boost::asio::buffer(
-              "{\"jsonrpc\": \"2.0\", \"method\": \"mining.subscribe\", "
-              "\"params\": [\"miner1\", \"\"], \"id\": 1}\n"));
+      Json::Value subJson;
+      subJson["jsonrpc"] = "2.0";
+      subJson["method"] = "mining.subscribe";
+      subJson["id"] = (Json::UInt64)1;
+      Json::Value params;
+      params.append(this->name);
+      params.append("");
+      subJson["params"] = params;
+      boost::asio::write(*this->client_socket,
+                         boost::asio::buffer(BuildJsonString(subJson)));
       // Parse the response to make sure it returns OK
       {
         Json::Value root = ReadJsonFromSocket(*this->client_socket);
