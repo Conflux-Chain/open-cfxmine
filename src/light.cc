@@ -245,7 +245,6 @@ OctopusABCW::OctopusABCW(const octopus_h256_t header_hash) {
 
 std::pair<u64, std::vector<u32>> multi_eval(const octopus_h256_t header_hash,
                                             const uint64_t nonce) {
-  const u64 *header_hash_dw = reinterpret_cast<const u64 *>(header_hash.b);
   OctopusABCW p(header_hash);
   const u32 a = p.a;
   const u32 b = p.b;
