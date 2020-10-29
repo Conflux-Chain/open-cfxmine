@@ -2,6 +2,8 @@
 
 A C++ miner for Conflux PoW.
 
+For detailed mining instruction, please refer to [Conflux Tethys GPU Mining Instruction](https://forum.conflux.fun/t/topic/3775).
+
 ## Build
 
 `cfxmine` depends on [CMake](https://cmake.org/) (version 3.18 or higher), and [Boost](https://www.boost.org/) (version 1.65.1).
