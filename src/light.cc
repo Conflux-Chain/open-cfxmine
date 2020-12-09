@@ -145,7 +145,7 @@ static inline bool octopus_hash(octopus_return_value_t *ret,
     mix->words[w] = s_mix[0].words[w % NODE_WORDS];
   }
   static const u32 page_size = sizeof(u32) * MIX_WORDS;
-  static const u32 num_full_pages = full_size / page_size;
+  const u32 num_full_pages = full_size / page_size;
   for (u32 i = 0; i != OCTOPUS_ACCESSES; ++i) {
     u32 const index =
         fnv(s_mix->words[0] ^ i ^ result[i], mix->words[i % MIX_WORDS]) %

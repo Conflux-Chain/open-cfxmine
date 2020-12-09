@@ -33,6 +33,7 @@ void OctopusCPUMiner::Work() {
           octopus_get_epoch(workBlockHeight)) {
         if (light) {
           octopus_light_delete(light);
+          light = nullptr;
         }
       }
       blockHeight = workBlockHeight;
